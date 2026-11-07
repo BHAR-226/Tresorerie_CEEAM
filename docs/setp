@@ -1,0 +1,75 @@
+Voici les réponses détaillées à chacune de vos questions pour bien cadrer le démarrage :
+
+---
+
+### 1. Par quoi doit-on commencer ?
+Oui, exactement : la première étape est la **préparation de l'environnement**, qui consiste à :
+1. Vérifier la présence des prérequis sur votre machine (**Python 3.10+** et **Node.js / npm**).
+2. Définir l'espace de travail avec deux dossiers distincts :
+   - `backend/` : l'API FastAPI et la base de données.
+   - `frontend/` : l'interface React / Vite.
+
+---
+
+### 2. Commandes d'initialisation ou création manuelle ?
+
+- **Côté Frontend (React)** : **On utilise une commande.**
+  Créer un projet React moderne à la main est fastidieux (TypeScript, Vite, Tailwind, etc.). L'outil standard aujourd'hui est **Vite** :
+  ```bash
+  npm create vite@latest frontend -- --template react-ts
+  ```
+  Cette commande génère automatiquement l'outillage de compilation, le serveur de développement ultra-rapide et les fichiers de configuration de base.
+
+- **Côté Backend (FastAPI)** : **C'est un mix des deux.**
+  Python ne dispose pas d'un générateur officiel (contrairement à React ou NestJS). La bonne pratique consiste à :
+  1. Créer un environnement virtuel Python (`python -m venv venv`).
+  2. Spécifier les dépendances dans un fichier `requirements.txt` (`fastapi`, `uvicorn`, `sqlalchemy`, `pydantic`, `alembic`, etc.) et les installer (`pip install -r requirements.txt`).
+  3. Structurer les dossiers et fichiers Python de manière organisée.
+
+---
+
+### 3. Quelle architecture allons-nous adopter ?
+
+#### Au niveau global : **Client-Serveur découplé (Monorepo)**
+Le frontend et le backend sont séparés. Ils communiquent uniquement via l'API REST en JSON. Cela permet au frontend d'être distribué en mode Web, PWA ou application de bureau, tout en attaquant le même backend.
+
+#### Pour le Backend FastAPI : **Architecture en Couches (Layered Architecture)**
+Pour une API REST moderne, le pattern classique MVC est moins adapté (car il n'y a pas de "Vue" HTML côté serveur). On opte pour une **architecture en couches**, claire et facile à maintenir :
+
+```text
+backend/
+├── app/
+│   ├── core/              # Config globale, sécurité JWT, variables d'environnement
+│   ├── db/                # Connexion base de données (SQLite/PostgreSQL) & Session
+│   ├── models/            # Modèles SQL (tables SQLAlchemy : etudiants, depenses, etc.)
+│   ├── schemas/           # Schémas de validation Pydantic (DTO : entrées / sorties de l'API)
+│   ├── services/          # Logique métier et calculs (KPIs du bilan, clôture, sync)
+│   ├── routers/           # Contrôleurs / Endpoints HTTP (GET /cotisations, POST /depenses, etc.)
+│   └── main.py            # Point d'entrée de l'application FastAPI
+├── alembic/               # Migrations de schéma de base de données
+└── requirements.txt
+```
+
+**Pourquoi ce découpage ?**
+- Les **routers** ne s'occupent que de recevoir les requêtes HTTP et de renvoyer les réponses.
+- Les **schemas (Pydantic)** garantissent que les données reçues sont valides avant d'arriver au code métier.
+- Les **services** contiennent les formules de calcul (solde, agrégations, calculs par pays) : le code est ainsi testable sans devoir lancer un serveur web.
+- Les **models** décrivent uniquement la structure des tables SQL.
+
+#### Pour le Frontend React : **Architecture par Fonctionnalités (Feature-based)**
+Plutôt que de mélanger tous les composants dans un seul dossier, on regroupe par module métier :
+```text
+frontend/src/
+├── components/            # Composants réutilisables (Navbar, Sidebar, Modal, Boutons)
+├── features/              # Découpage par métier
+│   ├── bilan/             # Composants du tableau de bord et graphiques Recharts
+│   ├── cotisations/       # Liste par pays, ajout d'étudiant, formulaires de versement
+│   ├── depenses/          # Vue hiérarchique Activité > Catégorie > Dépense
+│   ├── historique/        # Comparatifs pluriannuels
+│   └── auth/              # Formulaire de connexion Admin
+├── services/              # Appels API (Axios / Fetch) et gestion du cache local (Offline)
+└── types/                 # Interfaces TypeScript partagées
+```
+
+Cette structure est évolutive, lisible et prête pour le mode hors-ligne.
+

@@ -1,0 +1,82 @@
+
+Voici la procédure pas à pas pour configurer votre environnement virtuel Python et la liste des dépendances pour le `requirements.txt`.
+
+---
+
+### 1. Création et activation de l'environnement virtuel
+
+Ouvrez votre terminal PowerShell à la racine du projet, puis exécutez :
+
+```powershell
+# 1. Se positionner dans le dossier backend
+cd backend
+
+# 2. Créer l'environnement virtuel nommé "venv"
+python -m venv venv
+
+# 3. Activer l'environnement virtuel sous Windows PowerShell
+.\venv\Scripts\Activate.ps1
+```
+
+> [!NOTE]
+> Si PowerShell affiche une erreur rouge du type *"l'exécution de scripts est désactivée sur ce système"*, débloquez-le une fois pour toutes avec cette commande :
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+> Une fois activé, votre invite de commande affichera `(venv)` au début de la ligne.
+
+---
+
+### 2. Les dépendances à mettre dans `backend/requirements.txt`
+
+Voici le contenu recommandé pour votre fichier `requirements.txt`, regroupé par rôle :
+
+```text
+# --- Framework Web & Serveur ---
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# --- Base de données & ORM ---
+sqlalchemy>=2.0.30
+alembic>=1.13.0
+psycopg2-binary>=2.9.9
+
+# --- Validation des données & Paramètres ---
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+
+# --- Sécurité & Authentification JWT ---
+pyjwt>=2.9.0
+bcrypt>=4.2.0
+python-multipart>=0.0.12
+
+# --- Variables d'environnement ---
+python-dotenv>=1.0.1
+
+# --- Génération des Rapports Financiers PDF ---
+reportlab>=4.2.0
+```
+
+#### À quoi sert chaque dépendance ?
+1. **`fastapi` & `uvicorn`** : Le framework API asynchrone ultra-rapide et son serveur HTTP pour exécuter l'API.
+2. **`sqlalchemy`** : L'ORM qui traduit vos modèles Python en tables SQL (compatible SQLite en local et PostgreSQL sur le serveur central).
+3. **`alembic`** : Outil de gestion des migrations de base de données (pour faire évoluer les tables sans perdre de données).
+4. **`psycopg2-binary`** : Le connecteur pour PostgreSQL (pour la base centrale).
+5. **`pydantic` & `pydantic-settings`** : Validation stricte des données entrantes/sortantes et gestion propre de la configuration (`.env`).
+6. **`pyjwt` & `bcrypt`** : Hachage sécurisé des mots de passe admin et création/vérification des tokens d'authentification JWT (plus moderne et compatible avec les versions récentes de Python que le vieux `passlib`).
+7. **`python-multipart`** : Requis par FastAPI pour gérer les formulaires de connexion (`OAuth2PasswordRequestForm`).
+8. **`reportlab`** : Bibliothèque Python standard pour générer le rapport financier officiel en **PDF** (exigé dans le cahier des charges).
+
+---
+
+### 3. Installation des dépendances
+
+Une fois le fichier `requirements.txt` sauvegardé dans `backend/` et le venv activé :
+
+```powershell
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Votre environnement backend sera alors prêt à accueillir le code et les modèles de données.
+
