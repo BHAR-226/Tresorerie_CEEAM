@@ -1,6 +1,6 @@
 from enum import Enum
 
-from sqlalchemy import Enum as SAEnum, String
+from sqlalchemy import Enum as SAEnum, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -24,3 +24,4 @@ class User(UUIDMixin, TimestampMixin, Base):
         default=UserRole.VISITOR,
         nullable=False,
     )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

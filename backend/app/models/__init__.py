@@ -1,6 +1,6 @@
-from app.models.mixins import TimestampMixin, UUIDMixin, SyncMixin
-from app.models.users import User
-from app.models.exercices_annuels import ExerciceAnnuel
+from app.models.mixins import TimestampMixin, UUIDMixin, SyncMixin, SyncStatus
+from app.models.users import User, UserRole
+from app.models.exercices_annuels import ExerciceAnnuel, ExerciceStatut
 from app.models.pays import Pays
 from app.models.etudiants import Etudiant
 from app.models.cotisations import Cotisation
@@ -12,8 +12,11 @@ __all__ = [
     "UUIDMixin",
     "TimestampMixin",
     "SyncMixin",
+    "SyncStatus",
     "User",
+    "UserRole",
     "ExerciceAnnuel",
+    "ExerciceStatut",
     "Pays",
     "Etudiant",
     "Cotisation",

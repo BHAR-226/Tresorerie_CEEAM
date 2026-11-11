@@ -10,6 +10,7 @@ psycopg2-binary>=2.9.9
 # --- Validation des données & Paramètres ---
 pydantic>=2.8.0
 pydantic-settings>=2.4.0
+email-validator>=2.0.0
 
 # --- Sécurité & Authentification JWT ---
 pyjwt>=2.9.0

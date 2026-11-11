@@ -48,3 +48,8 @@ class SyncMixin:
         nullable=False,
         default=SyncStatus.PENDING_PUSH,
     )
+
+
+class BaseModelMixin(UUIDMixin, TimestampMixin, SyncMixin):
+    """Mixin complet combinant UUID, Timestamp et Synchronisation."""
+    pass
