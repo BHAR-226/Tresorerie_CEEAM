@@ -5,7 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.session import SessionLocal
 from app.db.init_db import init_db
-from app.routers import pays, etudiants
+from app.routers import (
+    auth,
+    exercices,
+    pays,
+    etudiants,
+    cotisations,
+    depenses,
+    bilan,
+    sync,
+)
 
 
 @asynccontextmanager
@@ -38,9 +47,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Enregistrement des routeurs
+# Enregistrement des routes de l'API REST
+app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(exercices.router, prefix=settings.API_V1_STR)
 app.include_router(pays.router, prefix=settings.API_V1_STR)
 app.include_router(etudiants.router, prefix=settings.API_V1_STR)
+app.include_router(cotisations.router, prefix=settings.API_V1_STR)
+app.include_router(depenses.router, prefix=settings.API_V1_STR)
+app.include_router(bilan.router, prefix=settings.API_V1_STR)
+app.include_router(sync.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/", tags=["Racine"])
