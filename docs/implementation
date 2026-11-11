@@ -1,0 +1,142 @@
+
+---
+
+### Le prérequis : Le fichier `.gitignore`
+
+Il faut créer un fichier `.gitignore` (à la racine de votre projet ou dans `backend/`) pour éviter d'indexer par erreur votre environnement virtuel ou vos données locales :
+
+```gitignore
+# Environnement virtuel Python
+venv/
+.venv/
+env/
+
+# Fichiers temporaires Python
+__pycache__/
+*.py[cod]
+
+# Base de données locale de dev
+*.db
+*.sqlite3
+
+# Variables d'environnement secrètes
+.env
+
+# Dossiers d'outils
+.idea/
+.vscode/
+```
+
+---
+
+### La structure de dossiers à créer dans `backend/`
+
+Dans l'univers Python, pour que les dossiers soient reconnus comme des modules importables, chaque sous-dossier de code contiendra un fichier vide `__init__.py`.
+
+Voici l'arborescence cible complète à créer à l'intérieur du dossier `backend/` :
+
+```text
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                   # Point d'entrée de FastAPI (création de l'app, CORS, etc.)
+│   │
+│   ├── core/                     # Configuration globale & Sécurité
+│   │   ├── __init__.py
+│   │   ├── config.py             # Lecture du fichier .env (URL de la DB, secret JWT)
+│   │   └── security.py           # Fonctions de hachage de mot de passe & création de token
+│   │
+│   ├── db/                       # Base de données
+│   │   ├── __init__.py
+│   │   ├── session.py            # Initialisation du moteur SQLAlchemy et session locale
+│   │   └── base.py               # Classe mère declarative_base pour les modèles
+│   │
+│   ├── models/                   # Modèles SQL (tables)
+│   │   ├── __init__.py
+│   │   ├── user.py               # Table users (Admin / Visiteur)
+│   │   ├── exercice.py           # Table exercices_annuels
+│   │   ├── cotisation.py         # Tables pays, etudiants, cotisations
+│   │   └── depense.py            # Tables activites, categories_depenses, depenses
+│   │
+│   ├── schemas/                  # Schémas Pydantic (validation entrée/sortie API)
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── exercice.py
+│   │   ├── cotisation.py
+│   │   ├── depense.py
+│   │   └── bilan.py              # DTO pour les KPIs et graphiques
+│   │
+│   ├── services/                 # Logique métier et calculs financiers
+│   │   ├── __init__.py
+│   │   ├── bilan_service.py      # Calculs des totaux, classements, solde
+│   │   ├── pdf_service.py        # Moteur de génération du rapport PDF
+│   │   └── sync_service.py       # Logique de synchronisation Offline/Online
+│   │
+│   └── routers/                  # Contrôleurs HTTP (les endpoints REST)
+│       ├── __init__.py
+│       ├── auth.py               # /api/v1/auth
+│       ├── exercices.py          # /api/v1/exercices
+│       ├── cotisations.py        # /api/v1/pays, /etudiants, /cotisations
+│       ├── depenses.py           # /api/v1/activites, /categories, /depenses
+│       ├── bilan.py              # /api/v1/bilan
+│       └── sync.py               # /api/v1/sync
+│
+├── .env                          # Configuration locale (ex: DATABASE_URL, SECRET_KEY)
+├── .env.example                  # Modèle pour les autres développeurs
+├── requirements.txt
+└── .gitignore
+```
+
+---
+
+### Pourquoi séparer ainsi ?
+1. **`models/` vs `schemas/`** : `models/` décrit comment les tables sont stockées en SQL, tandis que `schemas/` décrit ce que l'utilisateur a le droit d'envoyer ou de recevoir via l'API (par exemple, on ne renvoie jamais le champ `password_hash` dans un schéma utilisateur).
+2. **`services/`** : Garde les fichiers de routes très courts et lisibles. Toute la logique complexe (calculs d'agrégations, détection de l'activité la plus budgétivore, calculs de pourcentages) se trouve isolée et testable dans `services/`.
+
+Dès que vous le souhaitez, vous pouvez soit créer ces dossiers vous-même, soit passer en mode `write` pour que je les génère proprement pour vous.
+
+Pour continuer sur cette lancée, voici les deux premières étapes concrètes à mener :
+
+---
+
+### Étape 1 : Le fichier `.env` et la configuration (`core/config.py`)
+
+Avant de créer les modèles de données, l'application a besoin de connaître ses paramètres d'exécution.
+
+1. **Dans le fichier `backend/.env`** :
+   ```env
+   PROJECT_NAME="Tresorerie CEEAM"
+   VERSION="1.0.0"
+   API_V1_STR="/api/v1"
+
+   # Clé secrète pour signer les JWT (à changer en production)
+   SECRET_KEY="votre_cle_secrete_ultra_securisee_a_changer"
+   ALGORITHM="HS256"
+   ACCESS_TOKEN_EXPIRE_MINUTES=1440  # 24 heures
+
+   # Base de données : SQLite pour le dev local (ou PostgreSQL pour le serveur)
+   DATABASE_URL="sqlite:///./tresorerie_ceeam.db"
+   ```
+
+2. **Dans `backend/app/core/config.py`** :
+   On utilise `pydantic-settings` pour charger et valider automatiquement ces variables avec typage strict.
+
+---
+
+### Étape 2 : La connexion à la Base de Données (`db/session.py` et `db/base.py`)
+
+1. **`db/session.py`** :
+   - Initialise le moteur SQLAlchemy (`create_engine`).
+   - Pour **SQLite**, on active `connect_args={"check_same_thread": False}` pour permettre à FastAPI de traiter les requêtes en parallèle sans bloquer.
+   - Fournit un générateur de session `get_db()` pour injecter la session dans chaque route FastAPI (`Depends(get_db)`).
+
+2. **`db/base.py`** :
+   - Définit la classe de base déclarative `Base = declarative_base()`.
+   - Définit une classe de mixin réutilisable pour toutes nos tables contenant :
+     - `id` : UUIDv4 automatique (conformément au cahier des charges pour l'Offline-First).
+     - `created_at` : horodatage UTC.
+     - `updated_at` : horodatage de mise à jour.
+     - `deleted_at` : pour le *soft delete* indispensable à la synchronisation.
+
+---
+
