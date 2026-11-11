@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.session import SessionLocal
 from app.db.init_db import init_db
+from app.routers import pays, etudiants
 
 
 @asynccontextmanager
@@ -28,7 +29,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configuration CORS pour autoriser le frontend (React/Vite/PWA)
+# Configuration CORS pour autoriser le frontend (React / Vite / PWA)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
@@ -36,6 +37,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Enregistrement des routeurs
+app.include_router(pays.router, prefix=settings.API_V1_STR)
+app.include_router(etudiants.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/", tags=["Racine"])

@@ -3,7 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
-from app.models.exercice import ExerciceStatut
+from app.models import ExerciceStatut
 
 
 class ExerciceBase(BaseModel):

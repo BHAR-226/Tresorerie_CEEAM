@@ -1,3 +1,4 @@
+from app.schemas.common import ORMModel, UUIDModel
 from app.schemas.user import (
     UserBase,
     UserCreate,
@@ -12,15 +13,21 @@ from app.schemas.exercice import (
     ExerciceUpdate,
     ExerciceResponse,
 )
-from app.schemas.cotisation import (
+from app.schemas.pays import (
     PaysBase,
     PaysCreate,
     PaysUpdate,
-    PaysResponse,
-    PaysStatsResponse,
+    PaysRead,
+)
+from app.schemas.etudiant import (
     EtudiantBase,
     EtudiantCreate,
     EtudiantUpdate,
+    EtudiantRead,
+)
+from app.schemas.cotisation import (
+    PaysResponse,
+    PaysStatsResponse,
     EtudiantResponse,
     CotisationBase,
     CotisationCreate,
@@ -52,6 +59,9 @@ from app.schemas.bilan import (
 )
 
 __all__ = [
+    # Common
+    "ORMModel",
+    "UUIDModel",
     # User & Auth
     "UserBase",
     "UserCreate",
@@ -64,16 +74,19 @@ __all__ = [
     "ExerciceCreate",
     "ExerciceUpdate",
     "ExerciceResponse",
-    # Cotisations
+    # Pays & Étudiants
     "PaysBase",
     "PaysCreate",
     "PaysUpdate",
+    "PaysRead",
     "PaysResponse",
     "PaysStatsResponse",
     "EtudiantBase",
     "EtudiantCreate",
     "EtudiantUpdate",
+    "EtudiantRead",
     "EtudiantResponse",
+    # Cotisations
     "CotisationBase",
     "CotisationCreate",
     "CotisationUpdate",

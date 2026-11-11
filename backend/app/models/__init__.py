@@ -1,9 +1,18 @@
-from app.models.user import User, UserRole
-from app.models.exercice import ExerciceAnnuel, ExerciceStatut
-from app.models.cotisation import Pays, Etudiant, Cotisation
-from app.models.depense import Activite, CategorieDepense, Depense
+from app.models.mixins import TimestampMixin, UUIDMixin, SyncMixin, SyncStatus
+from app.models.users import User, UserRole
+from app.models.exercices_annuels import ExerciceAnnuel, ExerciceStatut
+from app.models.pays import Pays
+from app.models.etudiants import Etudiant
+from app.models.cotisations import Cotisation
+from app.models.activite import Activite
+from app.models.categories_depenses import CategorieDepense
+from app.models.depenses import Depense
 
 __all__ = [
+    "UUIDMixin",
+    "TimestampMixin",
+    "SyncMixin",
+    "SyncStatus",
     "User",
     "UserRole",
     "ExerciceAnnuel",

@@ -7,9 +7,7 @@ from app.core.security import get_password_hash
 from app.db.base import Base
 from app.db.session import engine
 import app.models  # Charge tous les modèles
-from app.models.user import User, UserRole
-from app.models.exercice import ExerciceAnnuel, ExerciceStatut
-from app.models.cotisation import Pays
+from app.models import User, UserRole, ExerciceAnnuel, ExerciceStatut, Pays
 
 # Liste par défaut des pays membres de la CEEAM
 PAYS_MEMBRES_CEEAM = [
