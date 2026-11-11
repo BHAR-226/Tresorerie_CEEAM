@@ -1,0 +1,72 @@
+# Couche Services — Logique Métier & Calculs Financiers
+
+La couche **Services** (`backend/app/services/`) encapsule l'ensemble de la logique métier, des règles de gestion financière et des agrégations analytiques de l'application. Elle est totalement indépendante du protocole HTTP.
+
+---
+
+## 1. `bilan_service.py` — Moteur de Calcul Financier & Graphiques
+
+Ce service extrait les données brutes des tables SQL et prépare les structures JSON nécessaires à l'affichage des graphiques interactifs (Recharts) sur le frontend :
+
+### Fonctions & Indicateurs Calculés :
+
+1. **`get_kpis_exercice(db, exercice_id)`** :
+   - **Report à nouveau** : `solde_initial` hérité de l'année précédente.
+   - **Total Cotisé (Recettes)** : somme des cotisations non supprimées de l'exercice.
+   - **Total Dépensé (Charges)** : somme des dépenses non supprimées de l'exercice.
+   - **Solde Net Disponible** : $\text{Solde initial} + \text{Recettes} - \text{Charges}$.
+
+2. **`get_stats_cotisations_par_pays(db, exercice_id)`** :
+   - Alimente le **BarChart horizontal** des pays membres.
+   - Calcule pour chaque pays : effectif total actif, nombre réel de cotisants, total versé en MAD, et **taux de participation** ($\frac{\text{cotisants}}{\text{effectif}} \times 100$).
+   - Trié automatiquement par montant décroissant pour mettre en valeur les plus grands contributeurs.
+
+3. **`get_comparaison_activites(db, exercice_id)`** :
+   - Alimente le **BarChart comparatif "Budget Prévu vs Dépenses Réelles"**.
+   - Détecte automatiquement les dépassements de budget (`depassement = True` si dépenses réelles > budget prévu) et calcule l'écart en MAD.
+
+4. **`get_repartition_categories(db, exercice_id, total_depense)`** :
+   - Agrège les dépenses par famille de coût (*Transport / Bus*, *Restauration / Nourriture*, *Logistique*).
+   - Calcule le montant total et la part en pourcentage pour le diagramme circulaire.
+
+5. **`get_evolution_mensuelle(db, exercice_id, solde_initial)`** :
+   - Alimente la **courbe temporelle (LineChart)**.
+   - Regroupe mois par mois les entrées de cotisations et sorties de dépenses, et calcule le solde cumulé de trésorerie au fil des mois.
+
+6. **`get_historique_comparatif(db)`** :
+   - Compile l'historique pluriannuel de tous les exercices académiques passés pour le graphique d'évolution sur plusieurs années.
+
+---
+
+## 2. `exercice_service.py` — Cycle de Vie des Exercices & Clôture
+
+Gère les règles strictes de transition d'une année académique à la suivante :
+
+- **`get_exercice_actif(db)`** : Identifie l'exercice actuellement en cours (ex: `2026-2027`).
+- **`cloturer_exercice(db, exercice_id)`** :
+  - Vérifie que l'exercice est ouvert.
+  - Passe le statut à `CLOTURE` et horodate la `date_fin`.
+  - **Fige les comptes** : aucune cotisation ni dépense ne peut plus être ajoutée ou modifiée sur cet exercice.
+- **`ouvrir_nouvel_exercice(db, libelle, date_debut, date_fin, reporter_solde)`** :
+  - Ouvre une nouvelle année (ex: `2027-2028`).
+  - Si `reporter_solde=True`, calcule le solde final exact du dernier exercice clôturé et l'injecte dans le `solde_initial` de la nouvelle année.
+
+---
+
+## 3. `pdf_service.py` — Moteur de Génération du Rapport Officiel
+
+Utilise la bibliothèque `reportlab` pour construire un document PDF officiel prêt pour l'impression ou l'archivage légal :
+
+- **En-tête officiel** de la CEEAM avec le logo et la Direction du Trésor.
+- **Synthèse du Bilan** : tableau récapitulatif avec solde initial, recettes, dépenses et solde net disponible.
+- **Tableau de recouvrement des cotisations** par pays (effectif, cotisants, taux de participation, total MAD).
+- **Tableau des activités** avec suivi des budgets et alertes de dépassement en rouge.
+- **Zone officielle de double signature** : *Le Trésorier Général* et *Le Président de la CEEAM*.
+- Le PDF est compilé en mémoire vive via `io.BytesIO` et streamé directement sans fichier temporaire sur le disque.
+
+---
+
+## 4. `sync_service.py` — Synchronisation Offline-First
+
+- **`pull_changes(db, last_sync)`** : Extrait toutes les modifications survenues depuis la dernière synchronisation pour mettre à jour les bases SQLite locales des postes clients.
+- **`push_changes(db, client_changes)`** : Applique les enregistrements créés ou modifiés hors-ligne avec arbitrage *Last-Write-Wins (LWW)* basé sur `updated_at`.
