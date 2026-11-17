@@ -1,0 +1,118 @@
+# Architecture Frontend & Interface Homme-Machine (IHM)
+
+Ce document décrit l'architecture complète, l'ergonomie, la charte graphique et l'organisation des composants de l'application web frontend développée avec **React 19**, **TypeScript**, **Vite**, **Tailwind CSS v4** et **Recharts** (`frontend/`).
+
+---
+
+## 1. Identité Visuelle & Charte Graphique CEEAM
+
+L'interface utilisateur respecte fidèlement les couleurs et l'emblème de la Communauté des Étudiants et Stagiaires Africains au Maroc (CEEAM) :
+
+- **Bleu Nuit / Marine Institutionnel (`#0B1B3D`)** :
+  - Couleur primaire pour la sidebar desktop, les en-têtes d'activités, les barres d'en-tête et les boutons d'action majeurs.
+  - Déclinaisons : `--color-ceeam-navy-light: #162C5B`, `--color-ceeam-navy-dark: #071126`.
+- **Orange Vif CEEAM (`#F58220`)** :
+  - Couleur d'accentuation pour les indicateurs de statut, les surbrillances, les montants en devises (DH), les graphiques comparatifs et les boutons d'encaissement.
+  - Déclinaisons : `--color-ceeam-orange-hover: #E07114`, `--color-ceeam-orange-light: #FFF7ED`.
+- **Fond d'application** : Blanc pur (`#FFFFFF`) et gris slate ultra-léger (`#F8FAFC`) pour un contraste optimal et un rendu professionnel.
+- **Logo officiel** : Présent en en-tête mobile et en haut de la sidebar desktop (`public/logo.jpg`), avec bordure circulaire orange.
+
+---
+
+## 2. Structure et Organisation des Fichiers
+
+```text
+frontend/
+├── public/
+│   ├── logo.jpg                    # Logo officiel CEEAM
+│   └── favicon.svg
+├── src/
+│   ├── assets/
+│   │   └── logo.jpg
+│   ├── components/
+│   │   ├── auth/
+│   │   │   └── LoginModal.tsx      # Modal de connexion sécurisée Trésorier
+│   │   └── layout/
+│   │       └── Navbar.tsx          # Navigation responsive (Sidebar + Header + Bottom Nav)
+│   ├── context/
+│   │   └── AuthContext.tsx         # Gestion de la session JWT et des rôles (Admin/Visiteur)
+│   ├── pages/
+│   │   ├── BilanPage.tsx           # Page d'accueil par défaut (KPIs, Graphes, PDF)
+│   │   ├── CotisationsPage.tsx     # Suivi des 17 pays, étudiants et encaissements
+│   │   ├── DepensesPage.tsx        # Arborescence Activité > Catégorie > Ligne de dépense
+│   │   └── HistoriquePage.tsx      # Comparatif multi-exercices et clôture annuelle
+│   ├── services/
+│   │   └── api.ts                  # Client Axios avec intercepteur Bearer JWT
+│   ├── types/
+│   │   └── index.ts                # Interfaces TypeScript strictes
+│   ├── App.tsx                     # Shell d'orchestration de l'application
+│   ├── index.css                   # Configuration Tailwind CSS v4 & variables de thème
+│   └── main.tsx                    # Point d'entrée React
+├── index.html                      # Balises HTML, méta-données et titre en français
+├── vite.config.ts                  # Configuration du bundler Vite avec plugin Tailwind
+└── tsconfig.json                   # Typage strict TypeScript
+```
+
+---
+
+## 3. Ergonomie & Conception Responsive (Mobile & Desktop)
+
+L'application est 100% responsive et offre deux expériences ergonomiques adaptées à l'appareil :
+
+1. **Expérience Desktop (Écrans larges &gt; 768px)** :
+   - **Sidebar latérale gauche fixe (`#0B1B3D`)** : Logo CEEAM, menu des 4 pages avec icônes Lucide, carte de profil du trésorier ou bouton de connexion.
+   - **Zone de travail élargie** : Grilles de 2 à 4 colonnes pour les KPIs et graphiques en vis-à-vis.
+2. **Expérience Mobile (Smartphones & Tablettes &lt; 768px)** :
+   - **Header haut compact** : Logo réduit, titre CEEAM Trésorerie et bouton d'authentification rapide.
+   - **Contenu scrollable sans coupure** : Marges réduites et padding inférieur adapté (`pb-24`) pour éviter tout chevauchement.
+   - **Barre de navigation ergonomique en bas (*Bottom Navigation Bar*)** : Fixée au pouce de l'utilisateur avec accès direct aux 4 onglets majeurs (Bilan, Cotisations, Dépenses, Historique).
+
+---
+
+## 4. Les 4 Pages Métier de l'Application
+
+### 4.1 Page Bilan (`BilanPage.tsx`) — Page d'Accueil par Défaut
+- **Cartes KPIs principales** :
+  - **Solde Net Disponible** en Dirhams (DH / MAD) avec report de l'exercice précédent.
+  - **Cotisations Récoltées** avec nombre de pays participants.
+  - **Dépenses Engagées** avec indicateur de rythme de consommation.
+  - **Activité Majeure** (la plus budgétivore avec son montant et % des dépenses totales).
+- **Téléchargement du Rapport PDF Officiel** :
+  - Déclenche la génération et le téléchargement direct du PDF officiel stylisé (`bilanService.downloadPdf`).
+- **Graphiques Généraux Immédiats (Tracés dès l'ouverture)** :
+  1. *BarChart horizontal* de la répartition des cotisations des 17 pays membres (classés par ordre décroissant pour une lisibilité ergonomique maximale).
+  2. *BarChart vertical* des dépenses cumulées par activité.
+- **Graphiques Détaillés Interactifs (Accessibles sur Clic Explicite via Onglets)** :
+  1. *Onglet "Budget vs Réel"* : Histogramme comparatif groupé (Budget prévisionnel en bleu nuit vs Dépenses réelles en orange vif).
+  2. *Onglet "Par Catégorie"* : Graphique circulaire en Donut (`PieChart`) ventilant les dépenses par poste (Restauration, Logistique, etc.).
+  3. *Onglet "Évolution Cash-flow"* : Graphique temporel multi-courbes (`LineChart`) comparant les flux mensuels d'entrées, de sorties et la ligne de trésorerie nette.
+
+### 4.2 Page Cotisations (`CotisationsPage.tsx`)
+- Sélecteur horizontal à défilement des **17 pays membres** de la CEEAM.
+- Moteur de recherche instantané filtrant les étudiants par nom, prénom ou communauté.
+- Tableau de conformité avec indicateurs visuels : badge vert "À jour" ou badge orange "En attente".
+- **Modals Trésorier** :
+  - *Encaisser une cotisation* : sélection de l'étudiant, saisie du montant en DH, date et quittance/reçu.
+  - *Inscrire un étudiant* : rattachement à son pays d'origine, nom, prénom et niveau d'études.
+
+### 4.3 Page Dépenses (`DepensesPage.tsx`)
+- Synthèse financière globale (Budget alloué, total dépensé, activités actives).
+- Arborescence hiérarchique en accordéon dépliable :
+  - **Activité** : budget prévisionnel, barre de progression visuelle, indicateur automatique d'alerte en cas de dépassement budgétaire.
+  - **Catégorie de dépense** : sous-total calculé automatiquement.
+  - **Lignes de dépense détaillées** : libellé, montant débité, date et référence du justificatif d'achat.
+- **Modals Trésorier** : Création d'une activité, ajout d'une catégorie et saisie d'une ligne de dépense avec justificatif.
+
+### 4.4 Page Historique & Clôture (`HistoriquePage.tsx`)
+- Tableau comparatif multi-exercices (libellé, statut, solde initial, cotisations, dépenses, solde net final, nombre de cotisants).
+- Graphique à barres comparatives multi-années (Évolution des recettes vs dépenses au fil des mandats).
+- **Actions Trésorier** :
+  - *Clôture de l'exercice actif* avec calcul du solde net final à figer.
+  - *Ouverture d'un nouvel exercice annuel* avec report automatique du solde.
+
+---
+
+## 5. Gestion de l'Authentification & Rôles
+
+- **Rôle Public / Visiteur** : Consultation intégrale de la trésorerie et téléchargement des rapports PDF (transparence financière totale).
+- **Rôle Trésorier Général (Admin)** : Accès aux boutons d'encaissement, de création d'activités, de saisie de factures et de clôture. Les formulaires sont protégés par JWT avec persistance `localStorage` et expiration gérée par intercepteur Axios.
