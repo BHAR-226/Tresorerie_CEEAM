@@ -1,0 +1,91 @@
+# Couche Contrôleurs — Architecture des Routes API REST
+
+Ce document décrit l'ensemble des points d'entrée (endpoints) de l'API REST développée avec **FastAPI** (`backend/app/routers/`).
+
+---
+
+## 1. Sécurité & Niveaux d'Accès
+
+L'API applique deux niveaux d'accès stricts :
+
+1. **Accès Public (Visiteur / Membre)** :
+   - Consultation libre en lecture seule (`GET`) du Bilan, des KPIs, des graphiques, des pays, des étudiants, des activités et des historiques.
+   - Téléchargement du rapport financier officiel en PDF.
+2. **Accès Administrateur (Trésorier Général)** :
+   - Requiert un en-tête HTTP : `Authorization: Bearer <token_jwt>`.
+   - Donne les droits d'écriture (`POST`, `PUT`, `DELETE`) sur les exercices, pays, étudiants, cotisations, activités, catégories et dépenses.
+   - Autorise la clôture d'exercice annuel et la synchronisation hors-ligne.
+
+---
+
+## 2. Inventaire Exhaustif des Endpoints (`/api/v1`)
+
+### Authentification (`/auth`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/login` | Public | Formulaire OAuth2 (Email + Mot de passe) ➔ Retourne le token JWT |
+| `GET` | `/api/v1/auth/me` | Authentifié | Profil complet de l'utilisateur connecté |
+
+### Exercices Annuels (`/exercices`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/exercices` | Public | Liste tous les exercices enregistrés |
+| `GET` | `/api/v1/exercices/actif` | Public | Récupère l'exercice en cours (`2026-2027`) |
+| `GET` | `/api/v1/exercices/{id}` | Public | Détails d'un exercice spécifique |
+| `POST` | `/api/v1/exercices` | Admin | Ouvre une nouvelle année avec report automatique du solde |
+| `POST` | `/api/v1/exercices/{id}/cloturer` | Admin | Clôture l'année et fige les comptes |
+
+### Pays Membres & Étudiants (`/pays` & `/etudiants`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/pays` | Public | Liste des 17 pays membres de la CEEAM |
+| `POST` | `/api/v1/pays` | Admin | Ajoute un nouveau pays membre |
+| `GET` | `/api/v1/etudiants` | Public | Liste des étudiants (filtrable par `pays_id`) |
+| `POST` | `/api/v1/etudiants` | Admin | Inscrit un nouvel étudiant rattaché à son pays |
+| `PUT` | `/api/v1/etudiants/{id}` | Admin | Modifie les coordonnées d'un étudiant |
+| `DELETE` | `/api/v1/etudiants/{id}` | Admin | Suppression logique (*soft delete*) |
+
+### Cotisations (`/cotisations`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/cotisations` | Public | Liste des versements (filtres: `exercice_id`, `etudiant_id`, `pays_id`) |
+| `POST` | `/api/v1/cotisations` | Admin | Enregistre un versement de quota en MAD pour un étudiant |
+| `PUT` | `/api/v1/cotisations/{id}` | Admin | Modifie le montant ou la date d'un versement |
+| `DELETE` | `/api/v1/cotisations/{id}` | Admin | Suppression logique d'une cotisation |
+
+### Activités & Dépenses (`/activites`, `/categories`, `/depenses`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/activites` | Public | Liste les activités avec sous-totaux et catégories |
+| `POST` | `/api/v1/activites` | Admin | Crée un événement (ex: *Sortie Ifrane*) avec budget prévisionnel |
+| `DELETE` | `/api/v1/activites/{id}` | Admin | Suppression logique d'une activité |
+| `POST` | `/api/v1/categories` | Admin | Ajoute une catégorie à une activité (ex: *Bus*, *Nourriture*) |
+| `DELETE` | `/api/v1/categories/{id}` | Admin | Suppression d'une catégorie |
+| `POST` | `/api/v1/depenses` | Admin | Ajoute une ligne de dépense (nom, prix en MAD, date, justificatif) |
+| `PUT` | `/api/v1/depenses/{id}` | Admin | Modifie une dépense unitaire |
+| `DELETE` | `/api/v1/depenses/{id}` | Admin | Suppression d'une dépense |
+
+### Bilan & Tableaux de Bord (`/bilan`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/bilan/{exercice_id}` | Public | Tableau de bord complet : KPIs, BarChart pays, comparaison Budget vs Réel, catégories, courbe mensuelle |
+| `GET` | `/api/v1/bilan/historique` | Public | Comparatif pluriannuel figé de tous les exercices |
+| `GET` | `/api/v1/bilan/{exercice_id}/pdf` | Public | Génère et télécharge le **rapport financier officiel en PDF** |
+
+### Synchronisation Offline-First (`/sync`)
+| Méthode | URL | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/sync/pull` | Admin | Télécharge les données modifiées pour le mode hors-ligne |
+| `POST` | `/api/v1/sync/push` | Admin | Téléverse les modifications effectuées en mode déconnecté |
+
+---
+
+## 3. Validation par Test de Bout en Bout
+
+Tous les routeurs ont été validés avec succès via le script d'intégration automatique :
+1. Connexion Trésorier (`POST /auth/login`) ➔ Jeton JWT obtenu.
+2. Détection de l'exercice académique actif `2026-2027`.
+3. Ajout d'une cotisation de 200 MAD pour un étudiant.
+4. Création de l'activité *Sortie Ifrane 2026*, catégorie *Transport*, dépense de 1 500 MAD.
+5. Calculs du Bilan mis à jour en temps réel (Total Recettes : 200 MAD, Total Dépenses : 1 500 MAD, Solde : -1 300 MAD).
+6. Téléchargement du document PDF officiel (HTTP 200, 4 330 octets).

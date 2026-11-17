@@ -1,7 +1,12 @@
+import sqlite3
+import uuid
 from typing import Generator
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, Session
 from app.core.config import settings
+
+# Enregistrement de l'adaptateur UUID pour SQLite
+sqlite3.register_adapter(uuid.UUID, str)
 
 # Configuration des paramètres de connexion
 connect_args = {}

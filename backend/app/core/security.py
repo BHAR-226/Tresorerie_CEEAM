@@ -89,7 +89,7 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = db.query(User).filter(User.id == user_uuid, User.deleted_at.is_(None)).first()
+    user = db.query(User).filter(User.id == str(user_uuid), User.deleted_at.is_(None)).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

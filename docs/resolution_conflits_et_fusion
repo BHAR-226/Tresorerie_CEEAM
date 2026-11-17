@@ -1,0 +1,38 @@
+# Résolution des Conflits & Fusion Collaborative
+
+Ce document récapitule la gestion du conflit Git intervenu suite aux travaux menés en parallèle par le collaborateur (**Adam Abdoulaye Tangara** — branche `tangara/app_models_schemas`) et notre branche principale.
+
+---
+
+## 1. Contexte du Conflit
+
+1. La branche `bhar` avait initialement été fusionnée dans `main`.
+2. En parallèle, Adam avait créé une branche depuis l'ancien commit initial et implémenté ses propres modèles, schémas et routes pour Pays et Étudiants.
+3. Lors de la tentative de Pull Request vers `main`, Git a détecté 8 conflits sur les fichiers centraux (`.env.example`, `main.py`, `models/__init__.py`, `schemas/__init__.py`, etc.).
+
+---
+
+## 2. Décisions d'Harmonisation Prises
+
+Plutôt que d'écraser le travail de l'un ou de l'autre, nous avons réconcilié le meilleur des deux approches :
+
+### A. Modèles SQL
+- **Adoption du découpage granulaire d'Adam** : un fichier par table au pluriel (`pays.py`, `etudiants.py`, `cotisations.py`, `depenses.py`, `categories_depenses.py`, `activite.py`, `exercices_annuels.py`, `users.py`).
+- **Mode Offline-First & Synchronisation** : intégration du mixin `SyncMixin` avec l'énumération `SyncStatus` (`SYNCED`, `PENDING_PUSH`).
+- **Sécurité et intégrité SQLite** : ajout du hook de connexion `PRAGMA foreign_keys = ON;` (indispensable car SQLite désactive les clés étrangères par défaut).
+- **Contraintes SQL de validation** : maintien des `CheckConstraint("montant > 0")` et `CheckConstraint("prix > 0")`.
+- **Ajout du champ `is_active`** sur le modèle `User` pour permettre l'activation/désactivation des comptes.
+
+### B. Configuration & Base de Données
+- **Unification des modules** : conservation de `app/core/config.py` et `app/db/session.py` tout en maintenant `app/config.py` et `app/database.py` comme modules de compatibilité ré-exportant les mêmes instances.
+- **Résolution des imports circulaires** : isolation stricte de la classe `Base = DeclarativeBase()` dans `app.db.base`, sans dépendance vers `app.models`.
+
+### C. Adaptation des UUIDs avec SQLite
+- Enregistrement de l'adaptateur universel `sqlite3.register_adapter(uuid.UUID, str)` dans `session.py` pour garantir la compatibilité native entre les types Python `uuid.UUID` et le stockage `String(36)` SQLite.
+
+---
+
+## 3. Validation
+
+- La branche `tangara/app_models_schemas` a été mise à jour avec le commit de merge `5772806`.
+- La Pull Request sur GitHub est passée au vert (**0 conflit, statut "Able to merge"**).
