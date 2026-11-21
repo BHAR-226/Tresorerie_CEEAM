@@ -247,7 +247,7 @@ export const BilanPage: React.FC = () => {
       {/* 3. GRAPHES GÉNÉRAUX IMMÉDIATS (AUTOMATIQUES AU CHARGEMENT)   */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Graphique 1: Répartition des Cotisations par Pays (BarChart Horizontal pour 17 pays) */}
+        {/* Graphique 1: Répartition des Cotisations par Pays (BarChart Horizontal) */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -255,7 +255,7 @@ export const BilanPage: React.FC = () => {
                 Cotisations par Pays Membre
               </h3>
               <p className="text-xs text-slate-500">
-                Classement décroissant des contributions (17 pays CEEAM)
+                Classement décroissant des contributions ({sortedCountries.length} pays)
               </p>
             </div>
             <span className="px-2.5 py-1 bg-[#FFF7ED] text-[#F58220] border border-[#F58220]/20 rounded-lg text-xs font-bold">
@@ -263,21 +263,22 @@ export const BilanPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="w-full h-80">
+          <div className="w-full h-[480px]">
             {sortedCountries.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={sortedCountries}
                   layout="vertical"
-                  margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+                  margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#F1F5F9" />
                   <XAxis type="number" tickFormatter={(val) => `${val} DH`} tick={{ fill: '#64748B', fontSize: 11 }} />
                   <YAxis
                     dataKey="pays_nom"
                     type="category"
-                    tick={{ fill: '#0B1B3D', fontSize: 12, fontWeight: 500 }}
-                    width={90}
+                    interval={0}
+                    tick={{ fill: '#0B1B3D', fontSize: 11, fontWeight: 500 }}
+                    width={115}
                   />
                   <Tooltip
                     formatter={(val: any) => [`${Number(val).toLocaleString('fr-FR')} DH`, 'Cotisations']}
@@ -314,7 +315,7 @@ export const BilanPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="w-full h-80">
+          <div className="w-full h-[480px]">
             {bilan.comparaison_activites && bilan.comparaison_activites.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
