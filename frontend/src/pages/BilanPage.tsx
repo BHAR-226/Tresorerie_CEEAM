@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   PieChart as PieIcon,
   Download,
@@ -107,9 +107,41 @@ export const BilanPage: React.FC = () => {
   }
 
   // Trier les pays par cotisation décroissante pour le BarChart horizontal
-  const sortedCountries = [...(bilan.repartition_pays || [])].sort(
-    (a, b) => b.total_cotise - a.total_cotise
-  );
+  // Normalisation des séries de données pour Recharts (garantie de types numériques)
+  const sortedCountries = useMemo(() => {
+    return [...(bilan.repartition_pays || [])]
+      .map((p) => ({
+        ...p,
+        total_cotise: Number(p.total_cotise) || 0,
+      }))
+      .sort((a, b) => b.total_cotise - a.total_cotise);
+  }, [bilan.repartition_pays]);
+
+  const comparaisonData = useMemo(() => {
+    return (bilan.comparaison_activites || []).map((a) => ({
+      ...a,
+      budget_prevu: a.budget_prevu != null ? Number(a.budget_prevu) : null,
+      total_depense: Number(a.total_depense) || 0,
+      ecart: Number(a.ecart) || 0,
+    }));
+  }, [bilan.comparaison_activites]);
+
+  const categoriesData = useMemo(() => {
+    return (bilan.repartition_categories || []).map((c) => ({
+      ...c,
+      total: Number(c.total) || 0,
+      pourcentage: Number(c.pourcentage) || 0,
+    }));
+  }, [bilan.repartition_categories]);
+
+  const evolutionData = useMemo(() => {
+    return (bilan.evolution_mensuelle || []).map((m) => ({
+      ...m,
+      cotisations: Number(m.cotisations) || 0,
+      depenses: Number(m.depenses) || 0,
+      solde: Number(m.solde) || 0,
+    }));
+  }, [bilan.evolution_mensuelle]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -316,10 +348,10 @@ export const BilanPage: React.FC = () => {
           </div>
 
           <div className="w-full h-[480px]">
-            {bilan.comparaison_activites && bilan.comparaison_activites.length > 0 ? (
+            {comparaisonData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={bilan.comparaison_activites}
+                  data={comparaisonData}
                   margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
@@ -428,11 +460,11 @@ export const BilanPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full h-88 pt-2">
-                {bilan.comparaison_activites && bilan.comparaison_activites.length > 0 ? (
+              <div className="w-full h-[400px] pt-2">
+                {comparaisonData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={bilan.comparaison_activites}
+                      data={comparaisonData}
                       margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
@@ -472,21 +504,21 @@ export const BilanPage: React.FC = () => {
                 Ventilation de toutes les dépenses par catégorie transversale (Restauration, Logistique, Communication, etc.).
               </p>
 
-              <div className="w-full h-88 pt-2 flex flex-col md:flex-row items-center justify-center">
-                {bilan.repartition_categories && bilan.repartition_categories.length > 0 ? (
+              <div className="w-full h-[400px] pt-2">
+                {categoriesData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={bilan.repartition_categories}
+                        data={categoriesData}
                         dataKey="total"
                         nameKey="categorie_nom"
                         cx="50%"
-                        cy="50%"
+                        cy="45%"
                         innerRadius={65}
                         outerRadius={110}
                         paddingAngle={3}
                       >
-                        {bilan.repartition_categories.map((_, index) => (
+                        {categoriesData.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -499,7 +531,7 @@ export const BilanPage: React.FC = () => {
                       />
                       <Legend
                         verticalAlign="bottom"
-                        height={36}
+                        wrapperStyle={{ paddingTop: '20px' }}
                         formatter={(val) => <span className="text-xs text-slate-700 font-medium">{val}</span>}
                       />
                     </PieChart>
@@ -536,11 +568,11 @@ export const BilanPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full h-88 pt-2">
-                {bilan.evolution_mensuelle && bilan.evolution_mensuelle.length > 0 ? (
+              <div className="w-full h-[400px] pt-2">
+                {evolutionData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
-                      data={bilan.evolution_mensuelle}
+                      data={evolutionData}
                       margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />

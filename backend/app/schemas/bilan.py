@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal
 from typing import Optional, List
 from pydantic import BaseModel
 
@@ -11,7 +10,7 @@ class TopContributeur(BaseModel):
     pays_id: uuid.UUID
     pays_nom: str
     code_iso: Optional[str] = None
-    total_cotise: Decimal
+    total_cotise: float
     taux_participation: float
     nombre_etudiants: int
 
@@ -19,31 +18,31 @@ class TopContributeur(BaseModel):
 class ActiviteBudgetivore(BaseModel):
     activite_id: uuid.UUID
     activite_nom: str
-    total_depense: Decimal
+    total_depense: float
     pourcentage_des_depenses: float
 
 
 class RepartitionCategorie(BaseModel):
     categorie_nom: str
-    total: Decimal
+    total: float
     pourcentage: float
 
 
 class EvolutionMensuelle(BaseModel):
     mois: str  # Ex: "10/2026"
-    cotisations: Decimal
-    depenses: Decimal
-    solde: Decimal
+    cotisations: float
+    depenses: float
+    solde: float
 
 
 class ComparaisonActivite(BaseModel):
     activite_id: uuid.UUID
     nom: str
     date_activite: str
-    budget_prevu: Optional[Decimal] = None
-    total_depense: Decimal
+    budget_prevu: Optional[float] = None
+    total_depense: float
     depassement: bool
-    ecart: Decimal
+    ecart: float
 
 
 # ==========================================
@@ -53,10 +52,10 @@ class BilanResponse(BaseModel):
     exercice_id: uuid.UUID
     exercice_libelle: str
     exercice_statut: str
-    solde_initial: Decimal
-    total_cotise: Decimal
-    total_depense: Decimal
-    solde_disponible: Decimal  # solde_initial + total_cotise - total_depense
+    solde_initial: float
+    total_cotise: float
+    total_depense: float
+    solde_disponible: float  # solde_initial + total_cotise - total_depense
     activite_plus_budgetivore: Optional[ActiviteBudgetivore] = None
     top_contributeurs: List[TopContributeur] = []
     repartition_pays: List[TopContributeur] = []
@@ -74,10 +73,10 @@ class ExerciceHistoriqueSummary(BaseModel):
     statut: str
     date_debut: str
     date_fin: Optional[str] = None
-    solde_initial: Decimal
-    total_cotise: Decimal
-    total_depense: Decimal
-    solde_final: Decimal
+    solde_initial: float
+    total_cotise: float
+    total_depense: float
+    solde_final: float
     nombre_etudiants_cotisants: int
 
 
