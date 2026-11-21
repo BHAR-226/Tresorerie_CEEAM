@@ -20,84 +20,88 @@ from app.models import (
 )
 from app.db.init_db import init_db
 
-# Données réalistes d'étudiants par pays
+# Données réalistes d'étudiants par pays (15 pays officiels CEEAM)
 ETUDIANTS_PAR_PAYS = {
-    "Sénégal": [
-        ("Ndiaye", "Aminata", "Master 2 Droit des Affaires"),
-        ("Diop", "Cheikh", "Licence 3 Informatique"),
-        ("Sow", "Moussa", "Doctorat Économie"),
-        ("Fall", "Fatou", "Master 1 Génie Civil"),
-    ],
-    "Côte d'Ivoire": [
-        ("Kouamé", "Jean-Eudes", "Master 2 Finance & Audit"),
-        ("Konan", "Aïcha", "Licence 2 Biologie"),
-        ("Bamba", "Souleymane", "Master 1 Réseaux & Télécoms"),
-        ("Yao", "Affoué", "Licence 3 Gestion"),
-    ],
-    "Cameroun": [
-        ("Kamga", "Brice", "Master 2 Génie Logiciel"),
-        ("Mbarga", "Sandrine", "Licence 3 Droit"),
-        ("Fotsing", "Alain", "Master 1 Électromécanique"),
-        ("Ngono", "Chantal", "Doctorat Biochimie"),
-    ],
-    "Guinée": [
-        ("Diallo", "Mamadou Alpha", "Master 2 MIAGE"),
-        ("Barry", "Kadiatou", "Licence 3 Économie"),
-        ("Camara", "Ibrahima", "Master 1 Sciences Politiques"),
-    ],
-    "Mali": [
-        ("Traoré", "Sekou", "Licence 3 Mathématiques"),
-        ("Coulibaly", "Mariam", "Master 2 Gestion de Projet"),
-        ("Keïta", "Modibo", "Master 1 Ingénierie des Systèmes"),
-    ],
-    "Madagascar": [
-        ("Ravalomanana", "Andry", "Master 2 Agronomie"),
-        ("Razafindrakoto", "Fanja", "Licence 2 Médecine"),
-        ("Rakoto", "Jean-Luc", "Master 1 Géologie"),
+    "Benin": [
+        ("Hounkanrin", "Gildas", "2ème année"),
+        ("Dossou", "Clarisse", "3ème année"),
+        ("Agbodjan", "Rodrigue", "1ère année"),
+        ("Bio", "Chabi", "4ème année"),
     ],
     "Burkina Faso": [
-        ("Ouédraogo", "Wendkuni", "Master 2 Énergies Renouvelables"),
-        ("Savadogo", "Rasmata", "Licence 3 Sociologie"),
-        ("Zongo", "Hamado", "Master 1 Télécoms"),
+        ("Ouédraogo", "Wendkuni", "5ème année"),
+        ("Savadogo", "Rasmata", "3ème année"),
+        ("Zongo", "Hamado", "2ème année"),
+        ("Kaboré", "Issa", "1ère année"),
     ],
-    "Bénin": [
-        ("Hounkanrin", "Gildas", "Master 2 Audit & Contrôle"),
-        ("Dossou", "Clarisse", "Licence 3 Droit International"),
-        ("Agbodjan", "Rodrigue", "Master 1 Statistique"),
+    "Burundi": [
+        ("Nkurunziza", "Aimé", "1ère année"),
+        ("Irakoze", "Béatrice", "3ème année"),
+        ("Ndayishimiye", "Jean-Pierre", "2ème année"),
     ],
-    "Togo": [
-        ("Ajavon", "Messan", "Master 2 Commerce International"),
-        ("Lawson", "Akossiwa", "Licence 2 Pharmacie"),
-    ],
-    "Gabon": [
-        ("Mba", "Yannick", "Master 1 Pétrochimie"),
-        ("Ondo", "Prisca", "Licence 3 Communication"),
-    ],
-    "Congo (Brazzaville)": [
-        ("Ngoma", "Christian", "Master 2 Logistique"),
-        ("Mouanda", "Christelle", "Licence 3 Sciences Éco"),
-    ],
-    "RD Congo": [
-        ("Mukendi", "Patrick", "Master 2 Intelligence Artificielle"),
-        ("Kalonji", "Dorcas", "Licence 3 Psychologie"),
-    ],
-    "Tchad": [
-        ("Mahamat", "Hassan", "Master 1 Administration Publique"),
-        ("Abakar", "Zenaba", "Licence 2 Économie"),
-    ],
-    "Centrafrique": [
-        ("Bozizé", "Rodrigue", "Licence 3 Histoire"),
-    ],
-    "Niger": [
-        ("Issoufou", "Abdoulkarim", "Master 2 Hydraulique"),
-        ("Salifou", "Hadiza", "Licence 3 Droit"),
-    ],
-    "Mauritanie": [
-        ("Ould Ahmed", "Mohamed", "Master 1 Finance Islamique"),
+    "Cameroun": [
+        ("Kamga", "Brice", "4ème année"),
+        ("Mbarga", "Sandrine", "3ème année"),
+        ("Fotsing", "Alain", "2ème année"),
+        ("Ngono", "Chantal", "5ème année"),
     ],
     "Comores": [
-        ("Said", "Nourou", "Master 2 Tourisme"),
-        ("Bacari", "Nadjma", "Licence 3 Lettres Modernes"),
+        ("Said", "Nourou", "2ème année"),
+        ("Bacari", "Nadjma", "3ème année"),
+        ("Soilihi", "Yassine", "1ère année"),
+    ],
+    "Ghana": [
+        ("Mensah", "Kwame", "3ème année"),
+        ("Appiah", "Abena", "2ème année"),
+        ("Osei", "Kofi", "4ème année"),
+    ],
+    "Guinée": [
+        ("Diallo", "Mamadou Alpha", "5ème année"),
+        ("Barry", "Kadiatou", "3ème année"),
+        ("Camara", "Ibrahima", "2ème année"),
+        ("Bah", "Ousmane", "1ère année"),
+    ],
+    "Guinée Equatorial": [
+        ("Ndong", "Manuel", "2ème année"),
+        ("Obono", "Esperanza", "1ère année"),
+        ("Mba", "Federico", "3ème année"),
+    ],
+    "Mali": [
+        ("Traoré", "Sekou", "3ème année"),
+        ("Coulibaly", "Mariam", "4ème année"),
+        ("Keïta", "Modibo", "2ème année"),
+        ("Konaté", "Fatoumata", "1ère année"),
+    ],
+    "Mauritanie": [
+        ("Ould Ahmed", "Mohamed", "2ème année"),
+        ("Mint Sidi", "Mariem", "3ème année"),
+        ("Sy", "Amadou", "1ère année"),
+    ],
+    "Niger": [
+        ("Issoufou", "Abdoulkarim", "4ème année"),
+        ("Salifou", "Hadiza", "3ème année"),
+        ("Moussa", "Ibrahim", "1ère année"),
+    ],
+    "Senegal": [
+        ("Ndiaye", "Aminata", "5ème année"),
+        ("Diop", "Cheikh", "3ème année"),
+        ("Sow", "Moussa", "4ème année"),
+        ("Fall", "Fatou", "2ème année"),
+    ],
+    "Tchad": [
+        ("Mahamat", "Hassan", "2ème année"),
+        ("Abakar", "Zenaba", "3ème année"),
+        ("Djimet", "Allamine", "1ère année"),
+    ],
+    "Togo": [
+        ("Ajavon", "Messan", "4ème année"),
+        ("Lawson", "Akossiwa", "2ème année"),
+        ("Koffi", "Edoh", "1ère année"),
+    ],
+    "Zambia": [
+        ("Banda", "Mwila", "2ème année"),
+        ("Phiri", "Chileshe", "3ème année"),
+        ("Lungu", "Blessing", "1ère année"),
     ],
 }
 
@@ -107,6 +111,11 @@ def seed_demo_data():
     try:
         print("🌱 Initialisation des tables et données de base...")
         init_db(db)
+
+        # Nettoyage des anciennes cotisations et étudiants pour repartir sur des données propres
+        db.query(Cotisation).delete()
+        db.query(Etudiant).delete()
+        db.commit()
 
         # 1. Vérifier / Mettre à jour l'exercice actif 2026-2027
         exercice = (
@@ -130,7 +139,14 @@ def seed_demo_data():
 
         print(f"✅ Exercice actif : {exercice.libelle} (Solde initial: {exercice.solde_initial} DH)")
 
-        # 2. Récupérer tous les pays
+        # 2. S'assurer que les 15 pays membres sont tous présents
+        from app.db.init_db import PAYS_MEMBRES_CEEAM
+        for p_data in PAYS_MEMBRES_CEEAM:
+            p_exist = db.query(Pays).filter(Pays.nom == p_data["nom"]).first()
+            if not p_exist:
+                db.add(Pays(nom=p_data["nom"], code_iso=p_data.get("code_iso")))
+        db.commit()
+
         tous_les_pays = {p.nom: p for p in db.query(Pays).all()}
 
         # 3. Créer les étudiants

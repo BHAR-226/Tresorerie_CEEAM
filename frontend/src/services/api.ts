@@ -116,6 +116,13 @@ export const paysService = {
     const res = await api.post<Pays>('/pays', data);
     return res.data;
   },
+  update: async (id: string, data: { nom: string; code_iso?: string }): Promise<Pays> => {
+    const res = await api.put<Pays>(`/pays/${id}`, data);
+    return res.data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/pays/${id}`);
+  },
 };
 
 export const etudiantService = {
@@ -151,6 +158,18 @@ export const cotisationService = {
   },
   create: async (data: { etudiant_id: string; exercice_id: string; montant: number; date_paiement: string; commentaire?: string }): Promise<Cotisation> => {
     const res = await api.post<Cotisation>('/cotisations', data);
+    return res.data;
+  },
+  createDirect: async (data: {
+    nom: string;
+    prenom: string;
+    pays_id: string;
+    niveau: string;
+    exercice_id: string;
+    montant: number;
+    date_paiement: string;
+  }): Promise<Cotisation> => {
+    const res = await api.post<Cotisation>('/cotisations/direct', data);
     return res.data;
   },
   delete: async (id: string): Promise<void> => {

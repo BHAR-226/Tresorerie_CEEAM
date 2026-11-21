@@ -11,23 +11,21 @@ from app.models import User, UserRole, ExerciceAnnuel, ExerciceStatut, Pays
 
 # Liste par défaut des pays membres de la CEEAM
 PAYS_MEMBRES_CEEAM = [
-    {"nom": "Bénin", "code_iso": "BJ"},
+    {"nom": "Benin", "code_iso": "BJ"},
     {"nom": "Burkina Faso", "code_iso": "BF"},
+    {"nom": "Burundi", "code_iso": "BI"},
     {"nom": "Cameroun", "code_iso": "CM"},
-    {"nom": "Centrafrique", "code_iso": "CF"},
     {"nom": "Comores", "code_iso": "KM"},
-    {"nom": "Congo (Brazzaville)", "code_iso": "CG"},
-    {"nom": "RD Congo", "code_iso": "CD"},
-    {"nom": "Côte d'Ivoire", "code_iso": "CI"},
-    {"nom": "Gabon", "code_iso": "GA"},
+    {"nom": "Ghana", "code_iso": "GH"},
     {"nom": "Guinée", "code_iso": "GN"},
-    {"nom": "Madagascar", "code_iso": "MG"},
+    {"nom": "Guinée Equatorial", "code_iso": "GQ"},
     {"nom": "Mali", "code_iso": "ML"},
     {"nom": "Mauritanie", "code_iso": "MR"},
     {"nom": "Niger", "code_iso": "NE"},
-    {"nom": "Sénégal", "code_iso": "SN"},
+    {"nom": "Senegal", "code_iso": "SN"},
     {"nom": "Tchad", "code_iso": "TD"},
     {"nom": "Togo", "code_iso": "TG"},
+    {"nom": "Zambia", "code_iso": "ZM"},
 ]
 
 

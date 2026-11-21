@@ -44,6 +44,7 @@ export interface Etudiant {
   niveau: string;
   actif: boolean;
   total_cotise?: number | null;
+  pays?: Pays;
 }
 
 export interface Cotisation {

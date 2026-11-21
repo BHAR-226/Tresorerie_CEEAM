@@ -84,6 +84,16 @@ class CotisationCreate(CotisationBase):
     pass
 
 
+class CotisationDirectCreate(BaseModel):
+    nom: str
+    prenom: str
+    pays_id: uuid.UUID
+    niveau: str = "1ère année"
+    exercice_id: uuid.UUID
+    montant: Decimal = Field(..., gt=0)
+    date_paiement: date
+
+
 class CotisationUpdate(BaseModel):
     montant: Optional[Decimal] = Field(None, gt=0)
     date_paiement: Optional[date] = None
