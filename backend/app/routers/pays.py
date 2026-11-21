@@ -19,7 +19,7 @@ router = APIRouter(prefix="/pays", tags=["Pays"])
 
 @router.get("", response_model=list[PaysRead])
 def lister_pays(db: Session = Depends(get_db)):
-    return db.scalars(select(Pays).where(Pays.deleted_at.is_(None))).all()
+    return db.scalars(select(Pays).where(Pays.deleted_at.is_(None)).order_by(Pays.nom.asc())).all()
 
 
 @router.post("", response_model=PaysRead, status_code=201)

@@ -218,6 +218,20 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
     }
   };
 
+  // Gestion des Pays : Supprimer un pays
+  const handleDeletePays = async (paysId: string, paysNom: string) => {
+    if (!confirm(`Confirmez-vous la suppression du pays "${paysNom}" du répertoire ?`)) return;
+    try {
+      await paysService.delete(paysId);
+      if (selectedPaysId === paysId) {
+        setSelectedPaysId('ALL');
+      }
+      await fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Erreur lors de la suppression du pays');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -702,17 +716,24 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center space-x-1">
+                            <div className="flex items-center space-x-1.5">
                               <button
                                 onClick={() => {
                                   setEditingPaysId(p.id);
                                   setEditingPaysNom(p.nom);
                                   setEditingPaysCode(p.code_iso || '');
                                 }}
-                                className="p-1 text-slate-400 hover:text-[#0B1B3D] transition"
+                                className="p-1 text-slate-400 hover:text-[#0B1B3D] hover:bg-slate-100 rounded-md transition"
                                 title="Modifier"
                               >
                                 <Edit2 size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleDeletePays(p.id, p.nom)}
+                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
+                                title="Supprimer ce pays"
+                              >
+                                <Trash2 size={14} />
                               </button>
                             </div>
                           </>
