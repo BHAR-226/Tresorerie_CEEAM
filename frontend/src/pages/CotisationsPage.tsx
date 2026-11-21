@@ -432,11 +432,8 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
                       </td>
 
                       {/* Montant */}
-                      <td className="py-3 px-4 text-right font-extrabold text-[#0B1B3D]">
-                        <span className="text-emerald-700">
-                          {montantNum.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}{' '}
-                          <span className="text-xs font-bold text-[#F58220]">DH</span>
-                        </span>
+                      <td className="py-3 px-4 text-right font-semibold text-slate-800">
+                        {montantNum.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} DH
                       </td>
 
                       {/* Date */}
