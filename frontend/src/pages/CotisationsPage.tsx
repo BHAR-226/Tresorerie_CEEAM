@@ -322,7 +322,7 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
               onChange={(e) => setSelectedPaysId(e.target.value)}
               className="w-full px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-[#F58220] outline-hidden bg-slate-50/50 text-slate-700 font-medium"
             >
-              <option value="ALL">🌍 Tous les pays ({paysList.length})</option>
+              <option value="ALL">Tous les pays ({paysList.length})</option>
               {paysList.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.nom} {p.code_iso ? `(${p.code_iso})` : ''}
@@ -338,7 +338,7 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
               onChange={(e) => setSelectedNiveau(e.target.value)}
               className="w-full px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-[#F58220] outline-hidden bg-slate-50/50 text-slate-700 font-medium"
             >
-              <option value="ALL">🎓 Toutes les années</option>
+              <option value="ALL">Toutes les années</option>
               <option value="1ère année">1ère année</option>
               <option value="2ème année">2ème année</option>
               <option value="3ème année">3ème année</option>
@@ -354,10 +354,10 @@ export const CotisationsPage: React.FC<CotisationsPageProps> = ({ onOpenLogin })
               onChange={(e) => setSortBy(e.target.value as any)}
               className="w-full px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-[#F58220] outline-hidden bg-slate-50/50 text-slate-700 font-medium"
             >
-              <option value="DEFAULT">🔤 Ordre alphabétique (Pays &gt; Nom)</option>
-              <option value="MONTANT_DESC">💰 Cotisation décroissante (Max ➔ Min)</option>
-              <option value="MONTANT_ASC">💰 Cotisation croissante (Min ➔ Max)</option>
-              <option value="DATE_DESC">📅 Date la plus récente</option>
+              <option value="DEFAULT">Ordre alphabétique (Pays &gt; Nom)</option>
+              <option value="MONTANT_DESC">Cotisation décroissante</option>
+              <option value="MONTANT_ASC">Cotisation croissante</option>
+              <option value="DATE_DESC">Date la plus récente</option>
             </select>
           </div>
         </div>
