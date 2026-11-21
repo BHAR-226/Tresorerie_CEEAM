@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Wallet,
-  TrendingUp,
-  Receipt,
   PieChart as PieIcon,
   Download,
   AlertTriangle,
-  CheckCircle2,
   Calendar,
-  Layers,
   BarChart3,
   LineChart as LineChartIcon,
   RefreshCw,
@@ -170,14 +165,9 @@ export const BilanPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Solde Net Disponible */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-[#F58220]/40 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Solde Net Disponible
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center shadow-xs">
-              <Wallet size={20} className="text-[#F58220]" />
-            </div>
-          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Solde Net Disponible
+          </span>
           <div className="mt-3">
             <h2 className="text-2xl md:text-3xl font-extrabold text-[#0B1B3D] tracking-tight">
               {bilan.solde_disponible.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}{' '}
@@ -195,22 +185,16 @@ export const BilanPage: React.FC = () => {
 
         {/* Total Cotisations */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-emerald-300 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Cotisations Récoltées
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <TrendingUp size={20} />
-            </div>
-          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Cotisations Récoltées
+          </span>
           <div className="mt-3">
             <h2 className="text-2xl md:text-3xl font-extrabold text-emerald-700 tracking-tight">
               +{bilan.total_cotise.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}{' '}
               <span className="text-sm font-semibold text-emerald-600">DH</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1 flex items-center space-x-1">
-              <CheckCircle2 size={13} className="text-emerald-500" />
-              <span>{bilan.top_contributeurs.length} pays contributeurs</span>
+            <p className="text-xs text-slate-500 mt-1">
+              {bilan.top_contributeurs.length} pays contributeurs
             </p>
           </div>
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500" />
@@ -218,14 +202,9 @@ export const BilanPage: React.FC = () => {
 
         {/* Total Dépenses */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-rose-300 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Dépenses Engagées
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <Receipt size={20} />
-            </div>
-          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Dépenses Engagées
+          </span>
           <div className="mt-3">
             <h2 className="text-2xl md:text-3xl font-extrabold text-rose-700 tracking-tight">
               -{bilan.total_depense.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}{' '}
@@ -240,14 +219,9 @@ export const BilanPage: React.FC = () => {
 
         {/* Activité la plus budgétivore */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-amber-300 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Activité Majeure
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Layers size={20} />
-            </div>
-          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Activité Majeure
+          </span>
           <div className="mt-3">
             <h2 className="text-lg md:text-xl font-bold text-[#0B1B3D] truncate tracking-tight" title={bilan.activite_plus_budgetivore?.activite_nom || 'Aucune'}>
               {bilan.activite_plus_budgetivore?.activite_nom || 'Aucune activité'}
