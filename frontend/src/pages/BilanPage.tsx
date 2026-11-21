@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PieChart as PieIcon,
   Download,
@@ -106,42 +106,33 @@ export const BilanPage: React.FC = () => {
     );
   }
 
-  // Trier les pays par cotisation décroissante pour le BarChart horizontal
   // Normalisation des séries de données pour Recharts (garantie de types numériques)
-  const sortedCountries = useMemo(() => {
-    return [...(bilan.repartition_pays || [])]
-      .map((p) => ({
-        ...p,
-        total_cotise: Number(p.total_cotise) || 0,
-      }))
-      .sort((a, b) => b.total_cotise - a.total_cotise);
-  }, [bilan.repartition_pays]);
+  const sortedCountries = [...(bilan.repartition_pays || [])]
+    .map((p) => ({
+      ...p,
+      total_cotise: Number(p.total_cotise) || 0,
+    }))
+    .sort((a, b) => b.total_cotise - a.total_cotise);
 
-  const comparaisonData = useMemo(() => {
-    return (bilan.comparaison_activites || []).map((a) => ({
-      ...a,
-      budget_prevu: a.budget_prevu != null ? Number(a.budget_prevu) : null,
-      total_depense: Number(a.total_depense) || 0,
-      ecart: Number(a.ecart) || 0,
-    }));
-  }, [bilan.comparaison_activites]);
+  const comparaisonData = (bilan.comparaison_activites || []).map((a) => ({
+    ...a,
+    budget_prevu: a.budget_prevu != null ? Number(a.budget_prevu) : null,
+    total_depense: Number(a.total_depense) || 0,
+    ecart: Number(a.ecart) || 0,
+  }));
 
-  const categoriesData = useMemo(() => {
-    return (bilan.repartition_categories || []).map((c) => ({
-      ...c,
-      total: Number(c.total) || 0,
-      pourcentage: Number(c.pourcentage) || 0,
-    }));
-  }, [bilan.repartition_categories]);
+  const categoriesData = (bilan.repartition_categories || []).map((c) => ({
+    ...c,
+    total: Number(c.total) || 0,
+    pourcentage: Number(c.pourcentage) || 0,
+  }));
 
-  const evolutionData = useMemo(() => {
-    return (bilan.evolution_mensuelle || []).map((m) => ({
-      ...m,
-      cotisations: Number(m.cotisations) || 0,
-      depenses: Number(m.depenses) || 0,
-      solde: Number(m.solde) || 0,
-    }));
-  }, [bilan.evolution_mensuelle]);
+  const evolutionData = (bilan.evolution_mensuelle || []).map((m) => ({
+    ...m,
+    cotisations: Number(m.cotisations) || 0,
+    depenses: Number(m.depenses) || 0,
+    solde: Number(m.solde) || 0,
+  }));
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">

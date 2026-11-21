@@ -149,8 +149,8 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
     }
   };
 
-  const totalDepensesGlobal = activites.reduce((sum, a) => sum + (a.total_depense || 0), 0);
-  const totalBudgetPrevuGlobal = activites.reduce((sum, a) => sum + (a.budget_prevu || 0), 0);
+  const totalDepensesGlobal = activites.reduce((sum, a) => sum + (Number(a.total_depense) || 0), 0);
+  const totalBudgetPrevuGlobal = activites.reduce((sum, a) => sum + (Number(a.budget_prevu) || 0), 0);
 
   if (loading) {
     return (
@@ -210,13 +210,13 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
         <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <span className="text-xs font-bold uppercase text-slate-500">Budget Global Prévu</span>
           <p className="text-xl md:text-2xl font-extrabold text-[#0B1B3D] mt-1">
-            {totalBudgetPrevuGlobal.toLocaleString('fr-FR')} <span className="text-sm font-semibold text-[#F58220]">DH</span>
+            {totalBudgetPrevuGlobal.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-semibold text-[#F58220]">DH</span>
           </p>
         </div>
         <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <span className="text-xs font-bold uppercase text-slate-500">Total Dépenses Consommées</span>
           <p className="text-xl md:text-2xl font-extrabold text-rose-700 mt-1">
-            {totalDepensesGlobal.toLocaleString('fr-FR')} <span className="text-sm font-semibold text-rose-600">DH</span>
+            {totalDepensesGlobal.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-semibold text-rose-600">DH</span>
           </p>
         </div>
         <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
@@ -234,8 +234,8 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
         {activites.length > 0 ? (
           activites.map((activite) => {
             const isExpanded = !!expandedActivites[activite.id];
-            const budgetPrevu = activite.budget_prevu || 0;
-            const totalDepense = activite.total_depense || 0;
+            const budgetPrevu = Number(activite.budget_prevu) || 0;
+            const totalDepense = Number(activite.total_depense) || 0;
             const depasse = budgetPrevu > 0 && totalDepense > budgetPrevu;
             const percentUsed = budgetPrevu > 0 ? Math.round((totalDepense / budgetPrevu) * 100) : 0;
 
@@ -261,7 +261,7 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
                         {depasse ? (
                           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700">
                             <AlertTriangle size={12} />
-                            <span>Dépassement (+{(totalDepense - budgetPrevu).toLocaleString('fr-FR')} DH)</span>
+                            <span>Dépassement (+{(totalDepense - budgetPrevu).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} DH)</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">
@@ -288,10 +288,10 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
                   <div className="flex items-center space-x-6 shrink-0 self-end md:self-auto">
                     <div className="text-right">
                       <div className="text-xs text-slate-500">
-                        Budget: <strong>{budgetPrevu.toLocaleString('fr-FR')} DH</strong>
+                        Budget: <strong>{budgetPrevu.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} DH</strong>
                       </div>
                       <div className="text-sm font-extrabold text-[#0B1B3D]">
-                        Dépensé: <span className={depasse ? 'text-red-600' : 'text-slate-800'}>{totalDepense.toLocaleString('fr-FR')} DH</span>
+                        Dépensé: <span className={depasse ? 'text-red-600' : 'text-slate-800'}>{totalDepense.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} DH</span>
                       </div>
                       <div className="w-28 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
                         <div
@@ -341,7 +341,7 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
                             </div>
                             <div className="flex items-center space-x-3">
                               <span className="text-xs font-bold text-slate-700">
-                                Sous-total: {cat.total_categorie.toLocaleString('fr-FR')} DH
+                                Sous-total: {(Number(cat.total_categorie) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} DH
                               </span>
                               {isAdmin && (
                                 <button
@@ -381,7 +381,7 @@ export const DepensesPage: React.FC<DepensesPageProps> = ({ onOpenLogin }) => {
                                       </span>
                                     )}
                                     <span className="font-bold text-rose-600 text-sm">
-                                      -{dep.prix.toLocaleString('fr-FR')} DH
+                                      -{Number(dep.prix).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} DH
                                     </span>
                                   </div>
                                 </div>

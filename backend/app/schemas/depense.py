@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class DepenseBase(BaseModel):
     categorie_id: uuid.UUID
     nom: str = Field(..., description="Ex: Location de bus, Pain, Café")
-    prix: Decimal = Field(..., gt=0, description="Montant en MAD")
+    prix: float = Field(..., gt=0, description="Montant en MAD")
     date_depense: date
     justificatif_url: Optional[str] = Field(None, description="URL ou chemin du reçu/facture")
 
@@ -23,7 +23,7 @@ class DepenseCreate(DepenseBase):
 class DepenseUpdate(BaseModel):
     categorie_id: Optional[uuid.UUID] = None
     nom: Optional[str] = None
-    prix: Optional[Decimal] = Field(None, gt=0)
+    prix: Optional[float] = Field(None, gt=0)
     date_depense: Optional[date] = None
     justificatif_url: Optional[str] = None
 
@@ -56,7 +56,7 @@ class CategorieDepenseResponse(CategorieDepenseBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
-    total_categorie: Decimal = Decimal("0.00")
+    total_categorie: float = 0.0
     depenses: List[DepenseResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
@@ -70,7 +70,7 @@ class ActiviteBase(BaseModel):
     nom: str = Field(..., description="Ex: Sortie Ifrane, Journée d'intégration")
     description: Optional[str] = None
     date_activite: date
-    budget_prevu: Optional[Decimal] = Field(None, ge=0, description="Budget prévisionnel optionnel")
+    budget_prevu: Optional[float] = Field(None, ge=0, description="Budget prévisionnel optionnel")
 
 
 class ActiviteCreate(ActiviteBase):
@@ -81,14 +81,14 @@ class ActiviteUpdate(BaseModel):
     nom: Optional[str] = None
     description: Optional[str] = None
     date_activite: Optional[date] = None
-    budget_prevu: Optional[Decimal] = None
+    budget_prevu: Optional[float] = None
 
 
 class ActiviteResponse(ActiviteBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
-    total_depense: Decimal = Decimal("0.00")
+    total_depense: float = 0.0
     depassement_budget: bool = False
     categories: List[CategorieDepenseResponse] = []
 
