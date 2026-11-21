@@ -36,6 +36,16 @@ class EvolutionMensuelle(BaseModel):
     solde: Decimal
 
 
+class ComparaisonActivite(BaseModel):
+    activite_id: uuid.UUID
+    nom: str
+    date_activite: str
+    budget_prevu: Optional[Decimal] = None
+    total_depense: Decimal
+    depassement: bool
+    ecart: Decimal
+
+
 # ==========================================
 # BILAN GLOBAL DE L'EXERCICE
 # ==========================================
@@ -51,6 +61,7 @@ class BilanResponse(BaseModel):
     top_contributeurs: List[TopContributeur] = []
     repartition_pays: List[TopContributeur] = []
     repartition_categories: List[RepartitionCategorie] = []
+    comparaison_activites: List[ComparaisonActivite] = []
     evolution_mensuelle: List[EvolutionMensuelle] = []
 
 

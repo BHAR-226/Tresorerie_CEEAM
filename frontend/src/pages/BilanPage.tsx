@@ -320,15 +320,16 @@ export const BilanPage: React.FC = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={bilan.comparaison_activites}
-                  margin={{ top: 10, right: 20, left: 20, bottom: 25 }}
+                  margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis
                     dataKey="nom"
                     tick={{ fill: '#0B1B3D', fontSize: 11 }}
-                    angle={-20}
+                    angle={-25}
                     textAnchor="end"
                     interval={0}
+                    height={70}
                   />
                   <YAxis tickFormatter={(val) => `${val} DH`} tick={{ fill: '#64748B', fontSize: 11 }} />
                   <Tooltip
@@ -432,10 +433,17 @@ export const BilanPage: React.FC = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={bilan.comparaison_activites}
-                      margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
+                      margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                      <XAxis dataKey="nom" tick={{ fill: '#0B1B3D', fontSize: 12, fontWeight: 500 }} />
+                      <XAxis
+                        dataKey="nom"
+                        tick={{ fill: '#0B1B3D', fontSize: 11, fontWeight: 500 }}
+                        angle={-25}
+                        textAnchor="end"
+                        interval={0}
+                        height={70}
+                      />
                       <YAxis tickFormatter={(val) => `${val} DH`} tick={{ fill: '#64748B', fontSize: 11 }} />
                       <Tooltip
                         formatter={(val: any, name: any) => [
